@@ -1,3 +1,57 @@
+# 封装后的使用：
+```java
+    private List<String> permissionList;
+    private Map<String, String> noteMap;
+    private int code_request_permission;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_flash);
+
+        permissionList = new ArrayList<>();
+        permissionList.add(Manifest.permission.CAMERA);
+        permissionList.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+        noteMap = new HashMap<>();
+        noteMap.put(Manifest.permission.CAMERA, "1.开启相机权限，可以玩耍自拍");
+        noteMap.put(Manifest.permission.WRITE_EXTERNAL_STORAGE, "2.开启访问本地存储权限，自拍保存在手机相册里");
+
+        code_request_permission = 9900;
+
+        checkPermissions();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == code_request_permission) {
+            Log.e("ard", "再次检查权限");
+            checkPermissions();
+        }
+    }
+
+    private void checkPermissions() {
+        XXPermissionTool.checkPermissions(this, //
+                                          permissionList, //
+                                          noteMap, //
+                                          code_request_permission, //
+                                          new XXPermissionTool.OnCheckPermissionsFinishedListener() {
+                                            @Override
+                                            public void onCheckPermissionsFinished(int flag) {
+                                                if (0 == flag) {
+                                                    Log.e("ard", "全都授权了");
+                                                    nextAty();
+                                                } else {
+                                                    Log.e("ard", "退出app");
+                                                    finish();
+                                                }
+                                            }
+                                        });
+    }
+```
+
+
 # 权限请求框架
 
 >[点击此处下载Demo](https://raw.githubusercontent.com/getActivity/XXPermissions/master/XXPermissions.apk)，[博文地址：一句代码搞定权限请求，从未如此简单](https://www.jianshu.com/p/c69ff8a445ed)
